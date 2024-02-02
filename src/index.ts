@@ -11,14 +11,24 @@ const typeDefs = `#graphql
     # This "Book" type defines the queryable fields for every book in the data source.
     type Book {
         title: String
-        author: String
-    }
+        author: Author
+      }
+      
+      type Author {
+        name: String
+      }
 
     # The "Query" type is special: it lists all the available queries that 
     # clients can execute, along with the return type for each. In this 
     # case, the "books" query returns an array of zero or more Books (defined above).
     type Query {
         books: [Book]
+    }
+    type Mutation {
+        addBook(title: String, author: AuthorInput): Book
+    }
+    input AuthorInput {
+        name: String
     }
 
 `;
@@ -43,6 +53,17 @@ const books = [
 const resolvers = {
     Query: {
         books: () => books,
+    },
+    Mutation: {
+        addBook: (parent, args) => {
+            const newBook = {
+                title: args.title,
+                author: args.author,
+            }
+            books.push(newBook)
+            return newBook
+        }
+        
     }
 }
 
